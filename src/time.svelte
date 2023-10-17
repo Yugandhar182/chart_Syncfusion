@@ -12,7 +12,7 @@
   
     const currentDate = new Date();
     const currentYear = currentDate.getFullYear();
-    const monthNames = Array.from({ length: 12 }, (_, i) => `${currentYear} ${new Date(currentYear, i, 1).toLocaleString('en-US', { month: 'long' })}`);
+    const monthNames = Array.from({ length: 12 }, (_, i) => `${currentYear} ${new Date(currentYear, i, 1).toLocaleString('en-US', { month: 'short' })}`);
 
 
     let startDate = '';
