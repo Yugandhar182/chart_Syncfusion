@@ -1,5 +1,5 @@
 <script>
-    import { onMount } from 'svelte';
+    import { onMount,afterUpdate  } from 'svelte';
     import { Chart, StackingColumnSeries, Category, DataLabel, Tooltip, Legend,Highlight } from '@syncfusion/ej2-charts';
     import { Browser } from '@syncfusion/ej2-base';
 
@@ -170,6 +170,20 @@
 
         chart.appendTo('#container3');
     }
+
+    onMount(() => {
+      getDatesFromLocalStorage(); // Try to get dates from local storage
+      fetchData(startDate, endDate); // Fetch data on component mount
+    });
+  
+    afterUpdate(() => {
+      fetchData(startDate, endDate); // Fetch data after updates
+      updateChart(); // Update the chart immediately
+  
+      // Store the dates in local storage for future use
+      localStorage.setItem('startDate', startDate);
+      localStorage.setItem('endDate', endDate);
+    });
 </script>
 <div class="container1">
     <h1 class="h1">Placement Value by User</h1>
@@ -181,7 +195,7 @@
         width: 1400px;
 	    height: 430px;
         margin-left:40px;
-        margin-top:100px;
+        margin-top:300px;
        
     }
      .h1{
