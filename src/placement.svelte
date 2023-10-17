@@ -181,13 +181,13 @@
         width: 1400px;
 	    height: 430px;
         margin-left:40px;
-        margin-top: 80px;
+        margin-top:100px;
        
     }
      .h1{
     font-size: 17px;
     font-weight: bold;
-    margin-left: -1120px;
+ 
     margin-bottom: 20px;
 
  }
