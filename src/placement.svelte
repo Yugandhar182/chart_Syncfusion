@@ -77,12 +77,21 @@
     // Function to create or update the chart
     function updateChart() {
         chartData = chartData.map(item => {
-            const dateParts = item.x.split('/');
-            const date = new Date(dateParts[1], dateParts[0] - 1); // Month is zero-based
-            return { ...item, date };
-        });
+    const dateParts = item.x.split('/');
+    const month = parseInt(dateParts[0]);
+    const year = parseInt(dateParts[1]);
 
-        chartData.sort((a, b) => a.date - b.date);
+    // Convert the month number to a three-letter month abbreviation (e.g., Jan, Feb)
+    const monthAbbreviation = new Date(year, month - 1, 1).toLocaleString('default', { month: 'short' });
+
+    return {
+        x: `${monthAbbreviation} ${year}`, // Format as "Jan 2022"
+        'Andy Barnes': item['Andy Barnes'],
+        'Gary Williams': item['Gary Williams'],
+        'Bob Shaw': item['Bob Shaw'],
+    };
+});
+      
         // Create and append the chart with the updated data source
         const chart = new Chart({
             primaryXAxis: {
