@@ -1,31 +1,31 @@
 <script>
   import { Card } from 'flowbite-svelte';
-  import { onMount } from 'svelte';
+  import { onMount,afterUpdate } from 'svelte';
   import { dateStore } from './DateStore.js'; // Import the store
 
    let metrics = null; 
    let startDate = "";
    let endDate = "";
 
-
    function getDatesFromLocalStorage() {
-      const storedStartDate = localStorage.getItem('startDate');
-      const storedEndDate = localStorage.getItem('endDate');
-  
-      if (storedStartDate && storedEndDate) {
-        startDate = storedStartDate;
-        endDate = storedEndDate;
-      }
-    }
-  
+  const storedStartDate = localStorage.getItem('startDate');
+  const storedEndDate = localStorage.getItem('endDate');
+
+  if (storedStartDate && storedEndDate) {
+    startDate = storedStartDate;
+    endDate = storedEndDate;
+    fetchData(startDate, endDate); // Fetch data when dates are loaded from local storage
+  }
+}
+
     // Subscribe to the dateStore
     dateStore.subscribe((value) => {
-      startDate = value.startDate;
-      endDate = value.endDate;
-      fetchData(startDate, endDate); // Fetch data whenever the date changes
-    });
-  
- 
+  startDate = value.startDate;
+  endDate = value.endDate;
+  fetchData(startDate, endDate); // Fetch data whenever the date changes
+});
+
+
     async function fetchData(startDate, endDate) {
       try {
         const apiUrl = "https://api.recruitly.io/api/dashboard/ats/metrics";
@@ -43,12 +43,20 @@
         console.error("Error:", error);
       }
     }
+    onMount(() => {
+      getDatesFromLocalStorage(); // Try to get dates from local storage
+      fetchData(startDate, endDate); // Fetch data on component mount
+    });
   
+    afterUpdate(() => {
+      // Store the dates in local storage for future use
+      localStorage.setItem('startDate', startDate);
+      localStorage.setItem('endDate', endDate);
+    });
  </script>
  
- {#if metrics}
- 
  <div class="container">
+  {#if metrics !== null}
   <div class="card1">
     <span class="hover-text">Total Jobs</span>
     <Card>
@@ -92,8 +100,9 @@
      <p class="font-normal text-gray-700 dark:text-gray-400 leading-tight"> Candidates/Jobs</p>
    </Card>
  </div>
- </div>
  {/if}
+ </div>
+ 
  
 
  <style>
