@@ -3,7 +3,8 @@
     import { dateStore } from './DateStore.js'; // Import the store
     import { Chart, BarSeries, Category, DataLabel } from '@syncfusion/ej2-charts';
     Chart.Inject(BarSeries, Category, DataLabel);
-  
+
+ 
     let chartData = [];
     let chart = null; // Initialize chart with null
   
