@@ -198,7 +198,7 @@
         width: 1400px;
 	    height: 430px;
         margin-left:40px;
-        margin-top: 380px;
+        margin-top: 80px;
        
     }
     .h1{
