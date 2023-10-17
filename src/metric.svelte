@@ -1,27 +1,49 @@
 <script>
   import { Card } from 'flowbite-svelte';
   import { onMount } from 'svelte';
+  import { dateStore } from './DateStore.js'; // Import the store
 
    let metrics = null; 
-   let apiKey = "TEST45684CB2A93F41FC40869DC739BD4D126D77";
-   let startDate = "01/01/2023";
-   let endDate = "11/10/2023";
- 
-   const apiUrl = `https://api.recruitly.io/api/dashboard/ats/metrics?start=${startDate}&end=${endDate}&apiKey=${apiKey}`;
- 
+   let startDate = "";
+   let endDate = "";
+
+
+   function getDatesFromLocalStorage() {
+      const storedStartDate = localStorage.getItem('startDate');
+      const storedEndDate = localStorage.getItem('endDate');
   
- onMount(async () => {
-     try {
-       const response = await fetch(apiUrl);
-       if (response.ok) {
-         metrics = await response.json();
-       } else {
-         console.error("Failed to fetch data");
-       }
-     } catch (error) {
-       console.error("Error: " + error);
-     }
-   });
+      if (storedStartDate && storedEndDate) {
+        startDate = storedStartDate;
+        endDate = storedEndDate;
+      }
+    }
+  
+    // Subscribe to the dateStore
+    dateStore.subscribe((value) => {
+      startDate = value.startDate;
+      endDate = value.endDate;
+      fetchData(startDate, endDate); // Fetch data whenever the date changes
+    });
+  
+ 
+    async function fetchData(startDate, endDate) {
+      try {
+        const apiUrl = "https://api.recruitly.io/api/dashboard/ats/metrics";
+        
+        const apiKey = "TEST45684CB2A93F41FC40869DC739BD4D126D77";
+        const response = await fetch(`${apiUrl}?start=${startDate}&end=${endDate}&apiKey=${apiKey}`);
+  
+        if (response.ok) {
+          metrics = await response.json();
+      } else {
+          const errorText = await response.text();
+          console.error("Failed to fetch data. Error:", errorText);
+        }
+      } catch (error) {
+        console.error("Error:", error);
+      }
+    }
+  
  </script>
  
  {#if metrics}
@@ -80,7 +102,7 @@
      flex-direction: row;
      padding: 20px;
 
-     margin-top:190px;
+     margin-top:300px;
      margin-left: 40px;
      width: 1400PX;
      height:150px ;
