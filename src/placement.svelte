@@ -91,13 +91,13 @@
         'Bob Shaw': item['Bob Shaw'],
     };
 });
-      
+
         // Create and append the chart with the updated data source
         const chart = new Chart({
             primaryXAxis: {
                 valueType: 'Category',
                 majorGridLines: { width: 0 },
-                
+             
                 labelStyle: {
                     size: '15px',
                  fontWeight:"normal"
