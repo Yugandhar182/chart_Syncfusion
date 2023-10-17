@@ -30,9 +30,7 @@
   });
 
    
- 
-    async function fetchData(startDate, endDate) {
-   
+  async function fetchData(startDate, endDate) {
         try {
             const apiUrl = "https://api.recruitly.io/api/dashboard/ats/data/placementmonthlyusermetrics";
             const apiKey = "TEST45684CB2A93F41FC40869DC739BD4D126D77";
@@ -42,22 +40,30 @@
                 const jsonData = await response.json();
                 console.log(jsonData);
 
-                // Transform API data into the format suitable for the chart
-                chartData = jsonData
-                    .filter(item => item.monthLabel) // Filter out items with undefined monthLabel
-                    .map(item => ({
-                        x: getMonthName(parseInt(item.monthLabel.split('/')[0]) - 1), // Convert numeric month to month name
-                        'Andy Barnes': item['Andy Barnes'] / 1000000, // Convert to millions
-                        'Gary Williams': item['Gary Williams'] / 1000000, // Convert to millions
-                        'Bob Shaw': item['Bob Shaw'] / 1000000, // Convert to millions
-                    }));
-
-                // Sort the chart data by month order
-                chartData.sort((a, b) => {
-                    return getMonthIndex(a.x) - getMonthIndex(b.x);
+                // Create an array of unique month names dynamically
+                const monthNames = [...new Set(jsonData.map(item => item.monthLabel))];
+                monthNames.sort((a, b) => {
+                    const [aMonth, aYear] = a.split('/');
+                    const [bMonth, bYear] = b.split('/');
+                    if (+aYear !== +bYear) {
+                        return +aYear - +bYear;
+                    } else {
+                        return +aMonth - +bMonth;
+                    }
                 });
 
-                console.log(chartData);
+                // Transform API data into the format suitable for the chart
+                chartData = monthNames.map(monthName => {
+                    const monthData = jsonData.filter(item => item.monthLabel === monthName);
+                    return {
+                        x: monthName,
+                        'Andy Barnes': monthData.reduce((total, item) => total + item['Andy Barnes'], 0) / 1000000,
+                        'Gary Williams': monthData.reduce((total, item) => total + item['Gary Williams'], 0) / 1000000,
+                        'Bob Shaw': monthData.reduce((total, item) => total + item['Bob Shaw'], 0) / 1000000
+                    };
+                });
+
+              
                 // Refresh the chart with the updated data
                 updateChart();
             } else {
@@ -67,23 +73,16 @@
             console.error('An error occurred while fetching data:', error);
         }
     }
-    function getMonthName(monthIndex) {
-        const options = { month: 'long' };
-        return new Date(2000, monthIndex, 1).toLocaleDateString(undefined, options);
-    }
-
-    // Function to get the month index from the month name
-    function getMonthIndex(monthName) {
-        const options = { month: 'long' };
-        const date = new Date(2000, 0, 1);
-        while (date.toLocaleDateString(undefined, options) !== monthName) {
-            date.setMonth(date.getMonth() + 1);
-        }
-        return date.getMonth();
-    }
-
+  
     // Function to create or update the chart
     function updateChart() {
+        chartData = chartData.map(item => {
+            const dateParts = item.x.split('/');
+            const date = new Date(dateParts[1], dateParts[0] - 1); // Month is zero-based
+            return { ...item, date };
+        });
+
+        chartData.sort((a, b) => a.date - b.date);
         // Create and append the chart with the updated data source
         const chart = new Chart({
             primaryXAxis: {
