@@ -1,12 +1,12 @@
 <script>
     import Reject from './rejectedreasons.svelte';
     import Calendar from './Calendar.svelte';
-  
-   
+    import Placement from './placement.svelte';
+ 
   </script>
   <div class="main-container">
   <Calendar/>
-  
+  <Placement/>
   <Reject/>
  </div>
 <style>
